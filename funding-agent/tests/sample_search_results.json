@@ -1,0 +1,35 @@
+{
+  "_nota": "DATOS DE PRUEBA / SIMULADOS para validar el pipeline sin API de búsqueda. NO son convocatorias verificadas. Las URLs apuntan a dominios oficiales reales pero el detalle es ilustrativo.",
+  "resultados": [
+    {
+      "title": "[SIMULADO] IDB Lab — Convocatoria de innovación en economía circular para empaques en América Latina",
+      "url": "https://bidlab.org/es/convocatorias/economia-circular-empaques",
+      "content": "IDB Lab abre una convocatoria para soluciones innovadoras de economía circular enfocadas en envases y empaques en América Latina y el Caribe. Financia pilotos y escalamiento con cofinanciación de contrapartida. Elegibles empresas, startups y organizaciones de Colombia, México, Brasil y la región. Cierre de aplicaciones: aproximadamente en 25 días. Monto por proyecto: hasta USD 500,000 en cooperación técnica no reembolsable."
+    },
+    {
+      "title": "[SIMULADO] Green Climate Fund — Readiness Programme apoyo a economía circular y residuos en países en desarrollo",
+      "url": "https://www.greenclimate.fund/readiness/circular-economy",
+      "content": "El Green Climate Fund ofrece apoyo de preparación (readiness) para fortalecer capacidades nacionales en mitigación climática, incluyendo gestión de residuos y economía circular. Colombia es país elegible a través de su Autoridad Nacional Designada. Ventana abierta de forma permanente, sin fecha de cierre fija. Financiamiento climático no reembolsable."
+    },
+    {
+      "title": "[SIMULADO] Fundación Avina y Latitud R — Fondo de inclusión de recicladores en economía circular",
+      "url": "https://www.latitudr.org/fondo-inclusion-recicladores",
+      "content": "Latitud R, con el apoyo de Fundación Avina y BID, lanza un fondo para fortalecer organizaciones de recicladores de base en América Latina, con énfasis en inclusión social y productiva. Elegibles cooperativas y asociaciones de recicladores en Colombia. Cierre estimado en 10 días. Donación de hasta USD 50,000 por organización."
+    },
+    {
+      "title": "[SIMULADO] Ellen MacArthur Foundation — Plastics innovation challenge for flexible packaging",
+      "url": "https://www.ellenmacarthurfoundation.org/plastics-challenge",
+      "content": "Innovation challenge focused on circular solutions for flexible plastic packaging. Open to organizations worldwide including Latin America. Award and acceleration support for winning teams. Submission deadline in approximately 45 days. This is a prize/challenge with technical mentoring, not a direct grant."
+    },
+    {
+      "title": "[SIMULADO] EUROCLIMA — Convocatoria de cooperación técnica en producción y consumo sostenible",
+      "url": "https://www.euroclima.org/convocatorias/produccion-sostenible",
+      "content": "EUROCLIMA, programa financiado por la Unión Europea, abre una línea de cooperación técnica para proyectos de producción y consumo sostenible y economía circular en América Latina. Elegibles entidades públicas y gremios de Colombia en alianza. Cierre en aproximadamente 70 días. Asistencia técnica, no transferencia directa de fondos."
+    },
+    {
+      "title": "[SIMULADO] Noticia: se realizó congreso de reciclaje en Bogotá el año pasado",
+      "url": "https://example-news.com/congreso-reciclaje-bogota",
+      "content": "Crónica periodística sobre un congreso de reciclaje realizado en Bogotá. No menciona ninguna convocatoria, fondo, grant ni financiación vigente. Es contenido informativo de un evento ya celebrado."
+    }
+  ]
+}

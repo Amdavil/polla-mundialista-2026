@@ -1,0 +1,12 @@
+# Núcleo
+anthropic>=0.40.0          # Análisis y estructuración con Claude
+pandas>=2.2.0              # Manejo de la base de datos
+openpyxl>=3.1.0           # Lectura/escritura de Excel (.xlsx)
+
+# Búsqueda web
+tavily-python>=0.5.0      # Proveedor por defecto (Tavily)
+requests>=2.31.0          # Proveedores Exa / Brave / Google CSE / SerpAPI
+
+# Informe y utilidades
+fpdf2>=2.7.0              # Generación del informe en PDF (puro Python)
+python-dotenv>=1.0.0     # Carga de variables desde .env (opcional pero recomendado)

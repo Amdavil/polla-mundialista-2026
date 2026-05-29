@@ -1,0 +1,49 @@
+{
+  "proyecto": "Radar de Atracción de Recursos — Visión Circular ANDI",
+  "descripcion": "Agente diario que identifica oportunidades de financiación, cooperación, grants, premios y asistencia técnica en economía circular, reciclaje, envases/empaques, clima e innovación ambiental aplicables a Colombia.",
+
+  "busqueda": {
+    "proveedor": "tavily",
+    "_proveedores_disponibles": ["tavily", "exa", "brave", "google_cse", "serpapi", "simulado"],
+    "max_resultados_por_query": 5,
+    "profundidad": "advanced",
+    "incluir_dominios_preferidos": false,
+    "nota": "Cambia 'proveedor' para usar otra API. 'simulado' usa tests/sample_search_results.json y NO sirve para producción."
+  },
+
+  "modelo": {
+    "extraccion": "claude-sonnet-4-5",
+    "max_tokens": 16000,
+    "batch_size": 25,
+    "nota": "Modelo de Claude para extraer/estructurar. 'batch_size' = resultados por llamada (evita truncar el JSON cuando hay muchos resultados)."
+  },
+
+  "correo": {
+    "modo": "borrador_imap",
+    "_modos_disponibles": ["borrador_imap", "envio_smtp", "dry_run"],
+    "asunto": "Informe diario de oportunidades de atracción de recursos – Visión Circular ANDI – {fecha}",
+    "firma": "Projectability / Soluciones PAL",
+    "adjuntar_excel": true,
+    "adjuntar_informe": true,
+    "nota": "borrador_imap = crea un BORRADOR real en Gmail (no envía). envio_smtp = envía de inmediato. dry_run = no toca la red, guarda el correo en output/ (para pruebas)."
+  },
+
+  "scoring": {
+    "urgencia_dias": {
+      "alta_max_dias": 15,
+      "media_alta_max_dias": 30,
+      "media_max_dias": 60
+    },
+    "umbral_destacada_pertinencia": 4,
+    "nota": "Umbrales en días para el score de urgencia (ver README). 'umbral_destacada_pertinencia' define qué oportunidades van a la sección Destacadas."
+  },
+
+  "rutas": {
+    "data": "data",
+    "output": "output",
+    "logs": "logs",
+    "excel": "data/oportunidades_atraccion_recursos_vision_circular.xlsx",
+    "csv": "data/oportunidades_atraccion_recursos_vision_circular.csv",
+    "datos_simulados": "tests/sample_search_results.json"
+  }
+}

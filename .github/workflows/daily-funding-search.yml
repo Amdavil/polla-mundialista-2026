@@ -1,0 +1,61 @@
+name: Radar Diario — Visión Circular ANDI
+
+on:
+  schedule:
+    # 8:00 AM hora Colombia (UTC-5) = 13:00 UTC, de lunes a viernes
+    - cron: '0 13 * * 1-5'
+  workflow_dispatch:
+    # Permite ejecutar manualmente desde GitHub Actions > Run workflow
+
+jobs:
+  radar:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write   # Para hacer commit de la base actualizada (Excel/CSV)
+
+    steps:
+      - name: Clonar repositorio
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Configurar Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+          cache-dependency-path: funding-agent/requirements.txt
+
+      - name: Instalar dependencias
+        run: pip install -r funding-agent/requirements.txt
+
+      - name: Ejecutar el agente
+        working-directory: funding-agent
+        env:
+          SEARCH_API_KEY:      ${{ secrets.SEARCH_API_KEY }}
+          GOOGLE_CSE_ID:       ${{ secrets.GOOGLE_CSE_ID }}
+          ANTHROPIC_API_KEY:   ${{ secrets.ANTHROPIC_API_KEY }}
+          GMAIL_SENDER_EMAIL:  ${{ secrets.GMAIL_SENDER_EMAIL }}
+          GMAIL_APP_PASSWORD:  ${{ secrets.GMAIL_APP_PASSWORD }}
+          TEAM_EMAILS:         ${{ secrets.TEAM_EMAILS }}
+        run: python agent.py
+
+      - name: Subir informe del día como artefacto
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: informe-oportunidades
+          path: |
+            funding-agent/output/*.md
+            funding-agent/output/*.pdf
+          if-no-files-found: ignore
+
+      - name: Guardar base actualizada en el repositorio
+        run: |
+          git config user.name "Radar Vision Circular Bot"
+          git config user.email "actions@github.com"
+          git add funding-agent/data/oportunidades_atraccion_recursos_vision_circular.xlsx \
+                  funding-agent/data/oportunidades_atraccion_recursos_vision_circular.csv
+          git diff --cached --quiet && echo "Sin cambios en la base hoy." || \
+            git commit -m "data: oportunidades Visión Circular $(date +%Y-%m-%d)"
+          git push

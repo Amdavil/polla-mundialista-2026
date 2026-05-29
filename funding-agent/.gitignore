@@ -1,0 +1,23 @@
+# Credenciales — NUNCA subir
+.env
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Logs y correos de prueba
+logs/*.log
+output/*.eml
+
+# Informes diarios (se suben como artefactos de GitHub Actions, no al repo)
+output/*.md
+output/*.pdf
+
+# Carpetas de backup de prueba
+data/_backup*/
+
+# Mantener las carpetas aunque estén vacías
+!logs/.gitkeep
+!output/.gitkeep

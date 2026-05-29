@@ -1,0 +1,44 @@
+{
+  "descripcion": "Consultas de búsqueda bilingües (ES/EN) para detectar oportunidades de atracción de recursos. Edita libremente: agrega, quita o reordena. El agente ejecuta cada query con el proveedor de búsqueda configurado.",
+
+  "queries_es": [
+    "economía circular convocatorias Colombia 2026",
+    "cooperación internacional reciclaje Colombia convocatoria",
+    "financiación economía circular América Latina grants",
+    "grants reciclaje plástico Colombia",
+    "convocatoria sostenibilidad empresarial Colombia financiamiento",
+    "fondos climáticos economía circular Colombia 2026",
+    "cooperación para recicladores Colombia inclusión",
+    "innovación envases empaques reciclaje convocatoria",
+    "fondo no reembolsable gestión residuos Colombia",
+    "premio innovación ambiental Colombia América Latina",
+    "asistencia técnica economía circular cooperación Colombia",
+    "responsabilidad extendida del productor REP financiación proyectos"
+  ],
+
+  "queries_en": [
+    "circular economy grants Colombia",
+    "recycling funding opportunities Latin America",
+    "plastic waste innovation challenge 2026",
+    "packaging circularity grants",
+    "climate finance Colombia circular economy",
+    "waste management grants Latin America",
+    "inclusive recycling funding waste pickers",
+    "just transition recycling grants",
+    "sustainable packaging innovation call",
+    "circular economy challenge fund application",
+    "plastics circularity challenge grant Latin America",
+    "ecodesign recyclability funding call Colombia"
+  ],
+
+  "queries_por_fuente": [
+    "IDB Lab call for proposals circular economy",
+    "Green Climate Fund readiness Colombia proposal",
+    "GEF small grants programme Colombia waste",
+    "Euroclima convocatoria economía circular",
+    "UK PACT Colombia funding call",
+    "Ellen MacArthur Foundation funding circular economy",
+    "Global Innovation Fund recycling application",
+    "Fundación Avina convocatoria reciclaje Latitud R"
+  ]
+}
