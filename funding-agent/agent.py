@@ -88,6 +88,7 @@ def main() -> int:
 
     umbral = int(config.get("scoring", {}).get("umbral_destacada_pertinencia", 4))
     stats = {
+        "vigentes": len(valid),
         "nuevas": len(nuevas),
         "prioritarias": len([o for o in valid if int(o.get("score_pertinencia", 1)) >= umbral
                              and not o.get("requiere_verificacion")]),
@@ -100,7 +101,9 @@ def main() -> int:
     else:
         attachments = [rep["md_path"], rep.get("pdf_path"), db["excel_path"]]
         email_draft.handle_email(stats, config, attachments, logger, today,
-                                 force_dry_run=args.simulate)
+                                 force_dry_run=args.simulate,
+                                 opps=valid_sorted,
+                                 resumen=resumen)
 
     logger.info("=" * 64)
     logger.info("  RESUMEN: %d vigentes | %d nuevas | %d prioritarias | %d a verificar | %d urgentes",
