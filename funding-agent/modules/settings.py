@@ -47,6 +47,9 @@ def _load_dotenv() -> None:
 def get_env(name: str, default: str | None = None, required: bool = False) -> str | None:
     _load_dotenv()
     value = os.environ.get(name, default)
+    # Elimina espacios/saltos de línea que pueden colarse al copiar secretos en GitHub Actions
+    if isinstance(value, str):
+        value = value.strip()
     if required and not value:
         raise RuntimeError(
             f"Falta la variable de entorno requerida: {name}. "
