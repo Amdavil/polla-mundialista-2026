@@ -54,9 +54,25 @@ jobs:
         run: |
           git config user.name "Radar Vision Circular Bot"
           git config user.email "actions@github.com"
-          git add funding-agent/data/oportunidades_atraccion_recursos_vision_circular.xlsx \
-                  funding-agent/data/oportunidades_atraccion_recursos_vision_circular.csv
+
+          XLSX="funding-agent/data/oportunidades_atraccion_recursos_vision_circular.xlsx"
+          CSV="funding-agent/data/oportunidades_atraccion_recursos_vision_circular.csv"
+
+          # Guardar los archivos recién generados
+          cp "$XLSX" /tmp/oportunidades.xlsx
+          cp "$CSV"  /tmp/oportunidades.csv
+
+          # Sincronizar con el remoto sin riesgo de conflicto
+          git fetch origin main
+          git reset --hard origin/main
+
+          # Restaurar los datos nuevos sobre el estado limpio del remoto
+          cp /tmp/oportunidades.xlsx "$XLSX"
+          cp /tmp/oportunidades.csv  "$CSV"
+
+          # Commitear solo si hay cambios reales
+          git add "$XLSX" "$CSV"
           git diff --cached --quiet && echo "Sin cambios en la base hoy." || \
             git commit -m "data: oportunidades Visión Circular $(date +%Y-%m-%d)"
-          git pull --rebase origin main
+
           git push
