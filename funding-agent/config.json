@@ -19,7 +19,7 @@
   },
 
   "correo": {
-    "modo": "borrador_imap",
+    "modo": "envio_smtp",
     "_modos_disponibles": ["borrador_imap", "envio_smtp", "dry_run"],
     "asunto": "Informe diario de oportunidades de atracción de recursos – Visión Circular ANDI – {fecha}",
     "firma": "Projectability / Soluciones PAL",
