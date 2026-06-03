@@ -55,6 +55,14 @@ def main() -> int:
     queries = all_queries(config)
     search_results = search.run_searches(config, queries, logger)
 
+    if not search_results and not args.simulate:
+        logger.error(
+            "ATENCIÓN: la búsqueda devolvió 0 resultados. "
+            "Verifica la cuota y validez de SEARCH_API_KEY en https://app.tavily.com — "
+            "posiblemente la cuota mensual está agotada. Se aborta la ejecución."
+        )
+        return 1
+
     # 2) Extracción + estructuración
     logger.info("[2/7] Extracción y estructuración")
     data = extract.extract_opportunities(search_results, config, logger, force_offline=args.simulate)
