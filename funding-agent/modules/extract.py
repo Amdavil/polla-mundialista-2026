@@ -197,6 +197,24 @@ def _call_claude(client, model: str, max_tokens: int, prompt: str) -> str:
     return message.content[0].text
 
 
+def _call_groq(api_key: str, model: str, max_tokens: int, prompt: str) -> str:
+    """Llama a Groq (gratuito, muy rápido) — API compatible con OpenAI."""
+    import requests as _req
+    resp = _req.post(
+        "https://api.groq.com/openai/v1/chat/completions",
+        headers={"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"},
+        json={
+            "model": model,
+            "messages": [{"role": "user", "content": prompt}],
+            "max_tokens": min(max_tokens, 8000),
+            "temperature": 0.1,
+        },
+        timeout=120,
+    )
+    resp.raise_for_status()
+    return resp.json()["choices"][0]["message"]["content"]
+
+
 def _call_gemini(api_key: str, model: str, max_tokens: int, prompt: str) -> str:
     """Llama a Google Gemini vía REST (gratuito en AI Studio, sin paquete adicional)."""
     import requests as _req
@@ -237,12 +255,14 @@ def _synthesize_summary(call_fn, parciales: list[str], logger: logging.Logger) -
 def extract_opportunities(search_results: list[dict], config: dict, logger: logging.Logger,
                           force_offline: bool = False) -> dict:
     anthropic_key = None if force_offline else get_env("ANTHROPIC_API_KEY")
+    groq_key      = None if force_offline else get_env("GROQ_API_KEY")
     gemini_key    = None if force_offline else get_env("GEMINI_API_KEY")
 
-    if not anthropic_key and not gemini_key:
+    if not anthropic_key and not groq_key and not gemini_key:
         if not force_offline:
             logger.warning(
-                "No hay ANTHROPIC_API_KEY ni GEMINI_API_KEY. Extracción en modo OFFLINE (simulado)."
+                "No hay ANTHROPIC_API_KEY, GROQ_API_KEY ni GEMINI_API_KEY. "
+                "Extracción en modo OFFLINE (simulado)."
             )
         return _offline_extract(logger)
 
@@ -250,7 +270,7 @@ def extract_opportunities(search_results: list[dict], config: dict, logger: logg
     max_tokens = int(modelo.get("max_tokens", 8192))
     batch_size = max(1, int(modelo.get("batch_size", 25)))
 
-    # ── Elegir proveedor IA ──────────────────────────────────────────────────
+    # ── Elegir proveedor IA (prioridad: Claude > Groq > Gemini) ─────────────
     if anthropic_key:
         try:
             import anthropic
@@ -260,6 +280,10 @@ def extract_opportunities(search_results: list[dict], config: dict, logger: logg
         model_name = modelo.get("extraccion", "claude-sonnet-4-5")
         call_fn    = lambda p: _call_claude(client, model_name, max_tokens, p)
         logger.info("Proveedor IA: Claude (%s)", model_name)
+    elif groq_key:
+        model_name = modelo.get("extraccion_groq", "llama-3.3-70b-versatile")
+        call_fn    = lambda p: _call_groq(groq_key, model_name, max_tokens, p)
+        logger.info("Proveedor IA: Groq (%s) — capa gratuita", model_name)
     else:
         model_name = modelo.get("extraccion_gemini", "gemini-2.0-flash")
         call_fn    = lambda p: _call_gemini(gemini_key, model_name, max_tokens, p)
