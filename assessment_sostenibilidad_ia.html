@@ -80,8 +80,18 @@
 
     .brand {
       display: grid;
-      gap: 6px;
+      gap: 8px;
       margin-bottom: 18px;
+    }
+
+    .brand-logo {
+      width: min(220px, 100%);
+      height: auto;
+      display: block;
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 10px;
     }
 
     .brand h1 {
@@ -497,6 +507,7 @@
   <div class="app">
     <aside>
       <div class="brand">
+        <img class="brand-logo" src="assets/projectability-logo.jpg" alt="Projectability">
         <h1>Assessment Sostenibilidad + IA</h1>
         <p>Herramienta práctica para medir madurez, priorizar brechas y visualizar el estado de implementación organizacional.</p>
       </div>
