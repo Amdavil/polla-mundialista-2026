@@ -16,7 +16,7 @@
     "extraccion_groq": "llama-3.3-70b-versatile",
     "extraccion_gemini": "gemini-2.0-flash",
     "max_tokens": 8192,
-    "batch_size": 25,
+    "batch_size": 10,
     "nota": "Prioridad: ANTHROPIC_API_KEY (Claude) > GROQ_API_KEY (Groq, gratis) > GEMINI_API_KEY (Gemini, gratis). 'batch_size' = resultados por llamada."
   },
 

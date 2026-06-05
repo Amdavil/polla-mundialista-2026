@@ -115,7 +115,7 @@ def _format_results(search_results: list[dict]) -> str:
     text = ""
     for i, r in enumerate(search_results, 1):
         text += f"\n[{i}]\nTÍTULO: {r.get('title', 'N/A')}\nURL: {r.get('url', 'N/A')}\n"
-        text += f"CONTENIDO: {(r.get('content') or '')[:1500]}\n---\n"
+        text += f"CONTENIDO: {(r.get('content') or '')[:800]}\n---\n"
     return text
 
 
@@ -339,7 +339,7 @@ def extract_opportunities(search_results: list[dict], config: dict, logger: logg
             parciales.append(data["resumen_ejecutivo"])
         logger.info("  Lote %d/%d: %d oportunidades, %d descartadas.", n, len(batches), len(opps), len(desc))
 
-    resumen = _synthesize_summary(call_fn, parciales, logger) if len(batches) > 1 else (parciales[0] if parciales else "")
+    resumen = _synthesize_summary(active_fn or (lambda p: ""), parciales, logger) if len(batches) > 1 else (parciales[0] if parciales else "")
 
     logger.info("Devolvió %d oportunidades y %d descartadas (total).", len(all_opps), len(all_desc))
     return {"oportunidades": all_opps, "descartadas": all_desc, "resumen_ejecutivo": resumen}
