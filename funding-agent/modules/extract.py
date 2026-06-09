@@ -224,8 +224,10 @@ def _call_groq(api_key: str, model: str, max_tokens: int, prompt: str) -> str:
 
 
 def _call_gemini(api_key: str, model: str, max_tokens: int, prompt: str) -> str:
-    """Llama a Google Gemini vía REST (gratuito en AI Studio, sin paquete adicional)."""
-    import requests as _req
+    """Llama a Google Gemini con reintentos automáticos.
+    Free tier: 15 RPM → sleep 4.5s entre llamadas para no exceder el límite."""
+    import time as _time, requests as _req
+    _time.sleep(4.5)  # Gemini free: 15 req/min → 1 cada 4s
     url = (
         f"https://generativelanguage.googleapis.com/v1beta/models/{model}"
         f":generateContent?key={api_key}"
@@ -237,9 +239,15 @@ def _call_gemini(api_key: str, model: str, max_tokens: int, prompt: str) -> str:
             "temperature": 0.1,
         },
     }
-    resp = _req.post(url, json=body, timeout=120)
+    for attempt in range(3):
+        resp = _req.post(url, json=body, timeout=120)
+        if resp.status_code == 429:
+            wait = float(resp.headers.get("retry-after", "15"))
+            _time.sleep(wait + 2)
+            continue
+        resp.raise_for_status()
+        return resp.json()["candidates"][0]["content"]["parts"][0]["text"]
     resp.raise_for_status()
-    return resp.json()["candidates"][0]["content"]["parts"][0]["text"]
 
 
 def _synthesize_summary(call_fn, parciales: list[str], logger: logging.Logger) -> str:
