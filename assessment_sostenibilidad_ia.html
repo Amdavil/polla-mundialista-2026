@@ -388,56 +388,169 @@
     .dashboard {
       display: grid;
       grid-template-columns: repeat(4, minmax(0, 1fr));
-      gap: 12px;
-      margin-bottom: 14px;
+      gap: 14px;
+      margin-bottom: 20px;
     }
 
     .metric {
       background: var(--panel);
       border: 1px solid var(--line);
-      border-radius: 8px;
-      padding: 14px;
+      border-radius: 12px;
+      padding: 18px;
       box-shadow: var(--shadow);
-      min-height: 106px;
+      min-height: 116px;
       display: grid;
       align-content: space-between;
+      position: relative;
+      overflow: hidden;
     }
+
+    .metric::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, var(--teal), var(--blue));
+    }
+
+    .metric.metric-score::before { background: linear-gradient(90deg, var(--navy), var(--blue)); }
+    .metric.metric-maturity::before { background: linear-gradient(90deg, var(--teal), var(--green)); }
+    .metric.metric-progress::before { background: linear-gradient(90deg, var(--blue), var(--lav)); }
+    .metric.metric-gap::before { background: linear-gradient(90deg, var(--amber), var(--red)); }
 
     .metric span {
       color: var(--muted);
       font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: .5px;
+      font-weight: 600;
     }
 
     .metric strong {
-      font-size: 28px;
-      letter-spacing: 0;
+      font-size: 30px;
+      letter-spacing: -.02em;
+    }
+
+    .metric small {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.4;
+      margin-top: 4px;
+    }
+
+    /* Barras de impacto por esfera */
+    .impact-bars {
+      display: grid;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .impact-bar-row {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 14px 18px;
+      box-shadow: var(--shadow);
+      display: grid;
+      grid-template-columns: 200px 1fr auto;
+      gap: 14px;
+      align-items: center;
+    }
+
+    .impact-bar-label {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--ink);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .impact-bar-label .pillar-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .impact-bar-track {
+      height: 20px;
+      background: #e8eef5;
+      border-radius: 10px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .impact-bar-fill {
+      height: 100%;
+      border-radius: 10px;
+      transition: width .4s ease;
+      min-width: 2px;
+    }
+
+    .impact-bar-value {
+      font-size: 14px;
+      font-weight: 800;
+      min-width: 60px;
+      text-align: right;
     }
 
     .report-grid {
       display: grid;
       grid-template-columns: minmax(340px, 1fr) minmax(340px, 1fr);
-      gap: 14px;
+      gap: 16px;
     }
 
     .panel {
       background: var(--panel);
       border: 1px solid var(--line);
-      border-radius: 8px;
-      padding: 14px;
+      border-radius: 12px;
+      padding: 20px;
       box-shadow: var(--shadow);
       min-width: 0;
     }
 
     .panel h2 {
-      margin: 0 0 8px;
+      margin: 0 0 6px;
       font-size: 18px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .panel h2 .panel-icon {
+      font-size: 20px;
     }
 
     .panel p {
-      margin: 0 0 12px;
+      margin: 0 0 14px;
       color: var(--muted);
       font-size: 13px;
-      line-height: 1.45;
+      line-height: 1.5;
+    }
+
+    .exec-summary-box {
+      background: linear-gradient(135deg, #f0f7ff, #f5f0ff);
+      border: 1px solid #d4dff0;
+      border-radius: 10px;
+      padding: 16px 20px;
+      margin-bottom: 16px;
+    }
+
+    .exec-summary-box .exec-level {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--navy);
+      text-transform: uppercase;
+      letter-spacing: .5px;
+      margin-bottom: 6px;
+    }
+
+    .exec-summary-box .exec-text {
+      font-size: 14px;
+      color: var(--ink);
+      line-height: 1.6;
     }
 
     canvas {
@@ -499,6 +612,8 @@
       .dashboard { grid-template-columns: 1fr; }
       .question-head { grid-template-columns: 1fr; }
       .levels { grid-template-columns: 1fr; }
+      .impact-bar-row { grid-template-columns: 1fr; gap: 8px; }
+      .impact-bar-value { text-align: left; }
       canvas { height: 300px; }
     }
 
@@ -583,32 +698,54 @@
         <div class="print-only">
           <h1>Reporte del Assessment de Proyectabilidad Empresarial Aumentada. ESG+AI</h1>
         </div>
+
         <div class="dashboard">
-          <div class="metric"><span>Puntaje general</span><strong id="metricScore">0.0 / 4.0</strong></div>
-          <div class="metric"><span>Nivel de madurez</span><strong id="metricMaturity">Sin evaluar</strong></div>
-          <div class="metric"><span>Preguntas respondidas</span><strong id="metricAnswered">0 / 44</strong></div>
-          <div class="metric"><span>Brecha promedio</span><strong id="metricGap">4.0</strong></div>
+          <div class="metric metric-score">
+            <span>Puntaje general</span>
+            <strong id="metricScore">0.0 / 4.0</strong>
+            <small id="metricScoreDesc">Promedio ponderado de todas las respuestas</small>
+          </div>
+          <div class="metric metric-maturity">
+            <span>Nivel de madurez</span>
+            <strong id="metricMaturity">Sin evaluar</strong>
+            <small id="metricMaturityDesc">Complete el assessment para obtener su nivel</small>
+          </div>
+          <div class="metric metric-progress">
+            <span>Avance</span>
+            <strong id="metricAnswered">0 / 44</strong>
+            <small>Preguntas respondidas del total</small>
+          </div>
+          <div class="metric metric-gap">
+            <span>Brecha promedio</span>
+            <strong id="metricGap">4.0</strong>
+            <small>Distancia al nivel óptimo (4.0)</small>
+          </div>
         </div>
+
+        <div class="impact-bars" id="impactBars"></div>
 
         <div class="report-grid">
           <div class="panel">
-            <h2>Radar por esferas</h2>
-            <p>Compara el puntaje promedio de cada esfera frente al máximo esperado.</p>
+            <h2><span class="panel-icon">📊</span> Radar por esferas</h2>
+            <p>Compara el puntaje promedio de cada esfera frente al máximo esperado (4.0).</p>
             <canvas id="pillarRadar" width="760" height="420"></canvas>
           </div>
           <div class="panel">
-            <h2>Radar de inteligencia artificial</h2>
-            <p>Detalle de madurez para los aspectos de IA aplicada a la organización.</p>
+            <h2><span class="panel-icon">🤖</span> Radar de inteligencia artificial</h2>
+            <p>Detalle de madurez para los 10 aspectos de IA aplicada a la organización.</p>
             <canvas id="aiRadar" width="760" height="420"></canvas>
           </div>
           <div class="panel">
-            <h2>Segmentos con mayor brecha</h2>
+            <h2><span class="panel-icon">🔍</span> Segmentos con mayor brecha</h2>
             <p>Promedio por segmento. Los valores más bajos indican mayor prioridad de intervención.</p>
             <canvas id="segmentRadar" width="760" height="420"></canvas>
           </div>
           <div class="panel">
-            <h2>Lectura ejecutiva</h2>
-            <p id="executiveSummary">Responde el assessment para generar conclusiones.</p>
+            <h2><span class="panel-icon">📋</span> Lectura ejecutiva</h2>
+            <div class="exec-summary-box">
+              <div class="exec-level" id="execLevel">Sin evaluar</div>
+              <div class="exec-text" id="executiveSummary">Responde el assessment para generar conclusiones.</div>
+            </div>
             <table>
               <thead>
                 <tr><th>Prioridad</th><th>Brecha</th><th>Recomendación</th></tr>
@@ -618,8 +755,8 @@
           </div>
         </div>
 
-        <div class="panel" style="margin-top:14px">
-          <h2>Brechas priorizadas por aspecto</h2>
+        <div class="panel" style="margin-top:16px">
+          <h2><span class="panel-icon">⚠️</span> Brechas priorizadas por aspecto</h2>
           <p>Lista ordenada por mayor brecha frente al nivel 4 de implementación.</p>
           <table>
             <thead>
@@ -995,23 +1132,77 @@
       }).join("");
     }
 
+    const PILLAR_COLORS = {
+      "ECONÓMICO Y GOBERNANZA": { color: "#1f4e79", bg: "rgba(31,78,121,.18)" },
+      "MEDIO AMBIENTE": { color: "#5f8d3e", bg: "rgba(95,141,62,.18)" },
+      "RESPONSABILIDAD SOCIAL": { color: "#c47f1b", bg: "rgba(196,127,27,.18)" },
+      "INTELIGENCIA ARTIFICIAL": { color: "#6b5ca5", bg: "rgba(107,92,165,.18)" }
+    };
+
+    function maturityColor(score) {
+      if (score < 1.8) return "var(--red)";
+      if (score < 2.6) return "var(--amber)";
+      if (score < 3.3) return "var(--blue)";
+      return "var(--teal)";
+    }
+
+    function renderImpactBars() {
+      const pillars = groupedAverage("pillar");
+      const container = byId("impactBars");
+
+      if (!pillars.length) {
+        container.innerHTML = '<div class="empty">Responde al menos una pregunta para ver el impacto por esfera.</div>';
+        return;
+      }
+
+      container.innerHTML = pillars.map(p => {
+        const pct = Math.round((p.score / 4) * 100);
+        const colors = PILLAR_COLORS[p.label] || { color: "var(--blue)", bg: "rgba(47,117,181,.18)" };
+        const gap = 4 - p.score;
+        const cls = gap >= 2 ? "risk-high" : gap >= 1 ? "risk-mid" : "risk-low";
+        return `
+          <div class="impact-bar-row">
+            <div class="impact-bar-label">
+              <span class="pillar-dot" style="background:${colors.color}"></span>
+              ${p.label}
+            </div>
+            <div class="impact-bar-track">
+              <div class="impact-bar-fill" style="width:${pct}%;background:${colors.color}"></div>
+            </div>
+            <div class="impact-bar-value ${cls}">${fmt(p.score)} / 4.0</div>
+          </div>`;
+      }).join("");
+    }
+
     function updateSummary() {
       const scores = QUESTIONS.map(q => Number(state.scores[q.code])).filter(Boolean);
       const avg = mean(scores);
       const answered = scores.length;
       const [label, text] = maturity(avg);
       const degrees = Math.round((avg / 4) * 360);
+      const scoreColor = answered ? maturityColor(avg) : "var(--muted)";
+
       byId("scoreGauge").textContent = fmt(avg);
       byId("gauge").style.background = `conic-gradient(var(--teal) ${degrees}deg, #dce6ef ${degrees}deg)`;
       byId("maturityLabel").textContent = label;
       byId("maturityText").textContent = text;
       byId("progressText").textContent = `${answered} / ${QUESTIONS.length}`;
       byId("progressBar").style.width = `${Math.round((answered / QUESTIONS.length) * 100)}%`;
+
       byId("metricScore").textContent = `${fmt(avg)} / 4.0`;
+      byId("metricScore").style.color = scoreColor;
+      byId("metricScoreDesc").textContent = answered ? `Basado en ${answered} de ${QUESTIONS.length} respuestas` : "Promedio ponderado de todas las respuestas";
       byId("metricMaturity").textContent = label;
+      byId("metricMaturity").style.color = scoreColor;
+      byId("metricMaturityDesc").textContent = answered ? text : "Complete el assessment para obtener su nivel";
       byId("metricAnswered").textContent = `${answered} / ${QUESTIONS.length}`;
       byId("metricGap").textContent = fmt(4 - avg);
+      byId("metricGap").style.color = answered ? (4 - avg >= 2 ? "var(--red)" : 4 - avg >= 1 ? "var(--amber)" : "var(--teal)") : "var(--ink)";
+
+      byId("execLevel").textContent = answered ? `Nivel: ${label} — Puntaje: ${fmt(avg)} / 4.0` : "Sin evaluar";
       byId("executiveSummary").textContent = text;
+
+      renderImpactBars();
       renderGapTable();
       renderRecommendations();
       renderCharts();
