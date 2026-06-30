@@ -176,6 +176,51 @@
       margin-top: 4px;
     }
 
+    /* ── ESTRELLAS DE PROYECTABILIDAD ── */
+    .star-rating {
+      position: relative;
+      display: inline-block;
+      font-size: 22px;
+      letter-spacing: 3px;
+      line-height: 1;
+    }
+
+    .star-rating-base, .star-rating-fill {
+      white-space: nowrap;
+    }
+
+    .star-rating-base { color: #dde4ed; }
+
+    .star-rating-fill {
+      position: absolute;
+      top: 0;
+      left: 0;
+      overflow: hidden;
+      width: 0%;
+      color: #f0b429;
+      transition: width .5s ease;
+    }
+
+    .star-rating.lg { font-size: 34px; letter-spacing: 5px; }
+
+    .category-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 12px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: .4px;
+      margin-top: 6px;
+    }
+
+    .category-badge.tier-start { background: rgba(196,127,27,.14); color: var(--amber); }
+    .category-badge.tier-mid   { background: rgba(47,117,181,.14); color: var(--blue); }
+    .category-badge.tier-top   { background: rgba(22,129,122,.16); color: var(--focus); }
+    .category-badge.tier-none  { background: #eef1f5; color: var(--muted); }
+
     .filters {
       display: grid;
       gap: 10px;
@@ -756,6 +801,10 @@
             <small id="maturityText">Responde las preguntas para generar el diagnóstico.</small>
           </div>
         </div>
+        <div class="star-rating" id="starRating" aria-label="Calificación de proyectabilidad">
+          <div class="star-rating-base">★★★★</div>
+          <div class="star-rating-fill" id="starFill" style="width:0%">★★★★</div>
+        </div>
         <div>
           <div class="progress-row">
             <span>Avance</span>
@@ -1171,12 +1220,34 @@
       return "";
     }
 
-    function maturity(score) {
-      if (!score) return ["Sin evaluar", "Responde las preguntas para generar el diagnóstico."];
-      if (score < 1.8) return ["Incipiente", "La gestión es principalmente reactiva. Conviene definir responsables, evidencias mínimas y un plan de cierre de brechas."];
-      if (score < 2.6) return ["Básico", "Existen acciones puntuales. La prioridad es convertirlas en procesos repetibles con indicadores y gobierno."];
-      if (score < 3.3) return ["En desarrollo", "La organización tiene prácticas relevantes, pero requiere estandarización, medición y despliegue transversal."];
-      return ["Integrado", "La gestión muestra madurez alta. El foco debe estar en mejora continua, trazabilidad e innovación responsable."];
+    function projectabilityCategory(score) {
+      if (!score) {
+        return {
+          stars: 0, pct: 0, tier: "none", icon: "🔍",
+          label: "Sin evaluar",
+          text: "Responde las preguntas para descubrir el nivel de proyectabilidad de tu organización."
+        };
+      }
+      const pct = Math.min(100, Math.round((score / 4) * 100));
+      if (score < 2.5) {
+        return {
+          stars: score, pct, tier: "start", icon: "🌱",
+          label: "Iniciando el Camino",
+          text: "Tu organización está dando los primeros pasos hacia la sostenibilidad. Es momento de construir bases sólidas: define responsables, documenta evidencias y traza un plan de cierre de brechas."
+        };
+      }
+      if (score <= 3.9) {
+        return {
+          stars: score, pct, tier: "mid", icon: "🚀",
+          label: "En Proyección",
+          text: "Tu organización ya está en movimiento. Existen prácticas relevantes que deben estandarizarse, medirse y desplegarse de forma transversal para acelerar el avance hacia la proyectabilidad."
+        };
+      }
+      return {
+        stars: score, pct, tier: "top", icon: "🏆",
+        label: "Empresa Proyectable",
+        text: "¡Felicitaciones! Tu organización alcanzó un nivel de gestión integrada y proyectable. El reto ahora es la mejora continua, la innovación responsable y mantener el liderazgo en sostenibilidad."
+      };
     }
 
     function groupedAverage(key, items = QUESTIONS) {
@@ -1277,10 +1348,9 @@
     };
 
     function maturityColor(score) {
-      if (score < 1.8) return "var(--red)";
-      if (score < 2.6) return "var(--amber)";
-      if (score < 3.3) return "var(--blue)";
-      return "var(--teal)";
+      if (score < 2.5) return "var(--amber)";
+      if (score <= 3.9) return "var(--blue)";
+      return "var(--focus)";
     }
 
     function renderImpactBars() {
@@ -1319,14 +1389,15 @@
         .map(Number);
       const avg = mean(scores);
       const answered = answeredQuestions.length;
-      const [label, text] = maturity(avg);
+      const cat = projectabilityCategory(avg);
       const degrees = Math.round((avg / 4) * 360);
       const scoreColor = answered ? maturityColor(avg) : "var(--muted)";
 
       byId("scoreGauge").textContent = fmt(avg);
       byId("gauge").style.background = `conic-gradient(var(--teal) ${degrees}deg, #dce6ef ${degrees}deg)`;
-      byId("maturityLabel").textContent = label;
-      byId("maturityText").textContent = text;
+      byId("maturityLabel").textContent = `${cat.icon} ${cat.label}`;
+      byId("maturityText").textContent = cat.text;
+      byId("starFill").style.width = `${cat.pct}%`;
       byId("progressText").textContent = `${answered} / ${QUESTIONS.length}`;
       byId("progressBar").style.width = `${Math.round((answered / QUESTIONS.length) * 100)}%`;
 
@@ -1336,15 +1407,17 @@
       byId("metricScoreDesc").textContent = answered
         ? `Basado en ${scores.length} respuestas${naCount ? ` (${naCount} marcadas como No aplica)` : ""}`
         : "Promedio ponderado de todas las respuestas";
-      byId("metricMaturity").textContent = label;
+      byId("metricMaturity").innerHTML = `${cat.icon} ${cat.label} <span class="category-badge tier-${cat.tier}">${"★".repeat(Math.round(cat.stars))}${"☆".repeat(4 - Math.round(cat.stars))}</span>`;
       byId("metricMaturity").style.color = scoreColor;
-      byId("metricMaturityDesc").textContent = answered ? text : "Complete el assessment para obtener su nivel";
+      byId("metricMaturityDesc").textContent = answered ? cat.text : "Complete el assessment para obtener su nivel";
       byId("metricAnswered").textContent = `${answered} / ${QUESTIONS.length}`;
       byId("metricGap").textContent = fmt(4 - avg);
       byId("metricGap").style.color = answered ? (4 - avg >= 2 ? "var(--red)" : 4 - avg >= 1 ? "var(--amber)" : "var(--teal)") : "var(--ink)";
 
-      byId("execLevel").textContent = answered ? `Nivel: ${label} — Puntaje: ${fmt(avg)} / 4.0` : "Sin evaluar";
-      byId("executiveSummary").textContent = text;
+      byId("execLevel").innerHTML = answered
+        ? `${cat.icon} ${cat.label} <span class="category-badge tier-${cat.tier}">Puntaje: ${fmt(avg)} / 4.0</span>`
+        : "Sin evaluar";
+      byId("executiveSummary").textContent = cat.text;
 
       renderImpactBars();
       renderGapTable();
