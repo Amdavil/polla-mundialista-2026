@@ -592,6 +592,53 @@
       background: #fff;
     }
 
+    .finish-banner {
+      position: sticky;
+      bottom: 16px;
+      margin-top: 20px;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 16px 20px;
+      box-shadow: 0 12px 32px rgba(23,32,51,.18);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .finish-banner-text {
+      display: grid;
+      gap: 2px;
+      min-width: 0;
+    }
+
+    .finish-banner-text strong {
+      font-size: 15px;
+      color: var(--ink);
+    }
+
+    .finish-banner-text span {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .finish-banner #finishBtn {
+      white-space: nowrap;
+      padding: 11px 22px;
+      font-weight: 700;
+    }
+
+    .finish-banner.complete {
+      background: linear-gradient(135deg, #eafaf3, #f1fbf8);
+      border-color: var(--focus);
+    }
+
+    .finish-banner.complete .finish-banner-text strong {
+      color: var(--focus);
+    }
+
     .print-only {
       display: none;
     }
@@ -619,7 +666,7 @@
 
     @media print {
       body { background: #fff; }
-      aside, .topbar, .toolbar, .question-list, .no-print { display: none !important; }
+      aside, .topbar, .toolbar, .question-list, .finish-banner, .no-print { display: none !important; }
       main { padding: 0; }
       .section { display: block; }
       .section:not(#report) { display: none; }
@@ -692,6 +739,14 @@
           <button id="showGaps" type="button">Ver no respondidas</button>
         </div>
         <div id="questionList" class="question-list"></div>
+
+        <div class="finish-banner" id="finishBanner">
+          <div class="finish-banner-text">
+            <strong id="finishBannerTitle">0 de 44 preguntas respondidas</strong>
+            <span id="finishBannerSubtitle">Responde todas las preguntas para obtener un diagnóstico completo y preciso.</span>
+          </div>
+          <button id="finishBtn" class="primary" type="button">Finalizar y ver reporte →</button>
+        </div>
       </section>
 
       <section id="report" class="section">
@@ -1206,6 +1261,23 @@
       renderGapTable();
       renderRecommendations();
       renderCharts();
+      updateFinishBanner(answered);
+    }
+
+    function updateFinishBanner(answered) {
+      const banner = byId("finishBanner");
+      const title = byId("finishBannerTitle");
+      const subtitle = byId("finishBannerSubtitle");
+      const total = QUESTIONS.length;
+      const complete = answered === total;
+
+      banner.classList.toggle("complete", complete);
+      title.textContent = complete
+        ? "¡Assessment completo! Tus respuestas se guardan automáticamente."
+        : `${answered} de ${total} preguntas respondidas`;
+      subtitle.textContent = complete
+        ? "Ya puedes ver tu diagnóstico completo, los radares de madurez y las recomendaciones priorizadas."
+        : `Faltan ${total - answered} preguntas. Responde todas para obtener un diagnóstico completo y preciso.`;
     }
 
     function renderGapTable() {
@@ -1379,13 +1451,12 @@
       });
 
       document.querySelectorAll(".tab").forEach(tab => {
-        tab.addEventListener("click", () => {
-          document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
-          document.querySelectorAll(".section").forEach(s => s.classList.remove("active"));
-          tab.classList.add("active");
-          byId(tab.dataset.view).classList.add("active");
-          updateSummary();
-        });
+        tab.addEventListener("click", () => switchView(tab.dataset.view));
+      });
+
+      byId("finishBtn").addEventListener("click", () => {
+        switchView("report");
+        window.scrollTo({ top: 0, behavior: "smooth" });
       });
 
       byId("clearAll").addEventListener("click", () => {
@@ -1408,15 +1479,17 @@
       });
 
       byId("printReport").addEventListener("click", () => {
-        document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
-        document.querySelectorAll(".section").forEach(s => s.classList.remove("active"));
-        document.querySelector('[data-view="report"]').classList.add("active");
-        byId("report").classList.add("active");
-        updateSummary();
+        switchView("report");
         setTimeout(() => window.print(), 100);
       });
 
       window.addEventListener("resize", () => updateSummary());
+    }
+
+    function switchView(view) {
+      document.querySelectorAll(".tab").forEach(t => t.classList.toggle("active", t.dataset.view === view));
+      document.querySelectorAll(".section").forEach(s => s.classList.toggle("active", s.id === view));
+      updateSummary();
     }
 
     populateFilters();
